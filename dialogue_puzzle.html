@@ -1,1 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German Dialogue Puzzle</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #0f172a; color: #f8fafc; padding: 2rem; margin: 0; text-align: center; }
+        .container { max-width: 650px; margin: auto; background-color: #1e293b; padding: 25px; border-radius: 12px; border: 2px solid #2563eb; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        select, button { padding: 10px; margin: 10px 0; border-radius: 6px; border: 1px solid #475569; background-color: #334155; color: white; font-size: 1rem; cursor: pointer; }
+        button:hover { background-color: #2563eb; }
+        #dialogue-list { list-style: none; padding: 0; margin: 20px 0; }
+        .dialogue-item { background-color: #334155; margin: 8px 0; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #475569; text-align: left; }
+        .dialogue-item button { padding: 4px 8px; font-size: 0.8rem; margin: 0 2px; cursor: pointer; }
+        .correct { background-color: #166534 !important; border-color: #22c55e !important; }
+        .incorrect { background-color: #991b1b !important; border-color: #ef4444 !important; }
+        #feedback { font-weight: bold; margin-top: 15px; min-height: 24px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>German Dialogue Puzzle</h1>
+        <p>Bring the dialogue lines into the correct conversational order!</p>
+        <label for="dialogue-select">Select Dialogue:</label><br>
+        <select id="dialogue-select" onchange="loadDialogue()">
+            <option value="dover">Ankunft in Dover (Gepäckträger)</option>
+            <option value="flight">Umbuchen (Flug)</option>
+            <option value="customs">Passkontrolle & Zoll</option>
+        </select>
+        <ul id="dialogue-list"></ul>
+        <button onclick="checkOrder()">Check Answer</button>
+        <div id="feedback"></div>
+    </div>
+    <script>
+        const dialogues = {
+            dover: ["Ja, mein Herr?", "Können Sie bitte mein Gepäck nehmen?", "Der Zug nach London?", "Ja, bitte."],
+            flight: ["Kann ich Ihnen behilflich sein?", "Ja, ich möchte gerne umbuchen.", "Ich bin auf den 3 Uhr Flug nach Düsseldorf gebucht."],
+            customs: ["Guten Morgen. Ist das Ihr Gepäck?", "Ja.", "Haben Sie etwas zu verzollen?", "Nein, nichts."]
+        };
+        let currentDialogue = [], scrambledDialogue = [];
+        function loadDialogue() {
+            const key = document.getElementById('dialogue-select').value;
+            currentDialogue = [...dialogues[key]];
+            scrambledDialogue = [...currentDialogue].sort(() => Math.random() - 0.5);
+            renderList();
+            document.getElementById('feedback').textContent = '';
+        }
+        function renderList() {
+            const listEl = document.getElementById('dialogue-list');
+            listEl.innerHTML = '';
+            scrambledDialogue.forEach((line, index) => {
+                const li = document.createElement('li');
+                li.className = 'dialogue-item';
+                li.innerHTML = `<span>\${line}</span><div><button onclick="moveItem(\${index}, -1)">⬆️</button><button onclick="moveItem(\${index}, 1)">⬇️</button></div>`;
+                listEl.appendChild(li);
+            });
+        }
+        function moveItem(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex >= 0 && newIndex < scrambledDialogue.length) {
+                const temp = scrambledDialogue[index];
+                scrambledDialogue[index] = scrambledDialogue[newIndex];
+                scrambledDialogue[newIndex] = temp;
+                renderList();
+            }
+        }
+        function checkOrder() {
+            const items = document.querySelectorAll('.dialogue-item');
+            let allCorrect = true;
+            scrambledDialogue.forEach((line, index) => {
+                if (line === currentDialogue[index]) {
+                    items[index].classList.add('correct');
+                    items[index].classList.remove('incorrect');
+                } else {
+                    items[index].classList.add('incorrect');
+                    items[index].classList.remove('correct');
+                    allCorrect = false;
+                }
+            });
+            document.getElementById('feedback').textContent = allCorrect ? "🎉 Richtig! Great job!" : "❌ Not quite right yet. Try rearranging lines!";
+        }
+        loadDialogue();
+    </script>
+</body>
 </html>

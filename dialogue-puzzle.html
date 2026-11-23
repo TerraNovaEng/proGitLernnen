@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German Dialogue Puzzle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 2rem;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background-color: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #2563eb;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            background-color: #334155;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
+        #dialogue-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .dialogue-item {
+            background-color: #334155;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #475569;
+            text-align: left;
+        }
+        .dialogue-item button {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            margin: 0 2px;
+            cursor: pointer;
+        }
+        .correct { background-color: #166534 !important; border-color: #22c55e !important; }
+        .incorrect { background-color: #991b1b !important; border-color: #ef4444 !important; }
+        #feedback {
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>German Dialogue Puzzle</h1>
+        <p>Bring the dialogue lines into the correct conversational order!</p>
+
+        <label for="dialogue-select">Select Dialogue:</label><br>
+        <select id="dialogue-select" onchange="loadDialogue()">
+            <option value="dover">Ankunft in Dover (Gepäckträger)</option>
+            <option value="flight">Umbuchen (Flug)</option>
+            <option value="customs">Passkontrolle & Zoll</option>
+            <option value="restaurant">Im Restaurant (Menü & Bestellung)</option>
+            <option value="bank">Geld wechseln (Bank)</option>
+        </select>
+
+        <ul id="dialogue-list"></ul>
+
+        <div>
+            <button onclick="checkOrder()">Check Answer</button>
+            <button onclick="loadDialogue()" style="background-color: #475569;">Reset / Shuffle</button>
+        </div>
+        <div id="feedback"></div>
+    </div>
+
+    <script>
+        const dialogues = {
+            dover: [
+                "Ja, mein Herr?",
+                "Können Sie bitte mein Gepäck nehmen?",
+                "Der Zug nach London?",
+                "Ja, bitte.",
+                "Ist das (hier) ihr Koffer?",
+                "Ja, er ist es."
+            ],
+            flight: [
+                "Kann ich Ihnen behilflich sein?",
+                "Ja, ich möchte gerne umbuchen.",
+                "Ich bin auf den 3 Uhr Flug nach Düsseldorf nächsten Samstag gebucht.",
+                "Möchten Sie einen früheren oder einen späteren Flug?",
+                "So spät wie möglich, bitte."
+            ],
+            customs: [
+                "Guten Morgen. Ist das Ihr Gepäck?",
+                "Ja.",
+                "Haben Sie etwas zu verzollen?",
+                "Nein, nichts.",
+                "In Ordnung, mein Herr. Sie können durchgehen."
+            ],
+            restaurant: [
+                "Kann ich bitte eine Weinkarte bitten?",
+                "Bitte, mein Herr, und hier ist die Weinkarte.",
+                "Womit möchten Sie beginnen?",
+                "Ich möchte gerne Tomatensuppe.",
+                "Und was möchten Sie als Hauptgericht?"
+            ],
+            bank: [
+                "Guten Tag, ich möchte gerne Geld wechseln.",
+                "Guten Tag. Welche Währung möchten Sie wechseln?",
+                "Ich möchte britische Pfund in Euro wechseln.",
+                "Wie viel möchten Sie denn wechseln?",
+                "200 Pfund bitte."
+            ]
+        };
+
+  <script>
+    let dialogues = {};
+    let currentDialogue = [];
+    let scrambledDialogue = [];
+
+    // Fetch dialogues dynamically from JSON on startup
+    async function initApp() {
+        try {
+            const response = await fetch('dialogues.json');
+            if (!response.ok) throw new Error('Failed to load dialogues.json');
+            dialogues = await response.json();
+            loadDialogue();
+        } catch (error) {
+            console.error('Error loading dialogues:', error);
+            document.getElementById('feedback').textContent = "❌ Error loading dialogues.json. Check local server!";
+            document.getElementById('feedback').style.color = "#f87171";
+        }
+    }
+
+    function loadDialogue() {
+        const key = document.getElementById('dialogue-select').value;
+        if (!dialogues[key]) return;
+
+        currentDialogue = [...dialogues[key]];
+        scrambledDialogue = [...currentDialogue];
+        
+        do {
+            scrambledDialogue.sort(() => Math.random() - 0.5);
+        } while (JSON.stringify(scrambledDialogue) === JSON.stringify(currentDialogue) && currentDialogue.length > 1);
+
+        renderList();
+        document.getElementById('feedback').textContent = '';
+    }
+
+    function renderList() {
+        const listEl = document.getElementById('dialogue-list');
+        listEl.innerHTML = '';
+        
+        scrambledDialogue.forEach((line, index) => {
+            const li = document.createElement('li');
+            li.className = 'dialogue-item';
+            li.innerHTML = '<span>' + line + '</span><div><button onclick="moveItem(' + index + ', -1)">⬆️</button><button onclick="moveItem(' + index + ', 1)">⬇️</button></div>';
+            listEl.appendChild(li);
+        });
+    }
+
+    function moveItem(index, direction) {
+        const newIndex = index + direction;
+        if (newIndex >= 0 && newIndex < scrambledDialogue.length) {
+            const temp = scrambledDialogue[index];
+            scrambledDialogue[index] = scrambledDialogue[newIndex];
+            scrambledDialogue[newIndex] = temp;
+            renderList();
+        }
+    }
+
+    function checkOrder() {
+        const items = document.querySelectorAll('.dialogue-item');
+        let allCorrect = true;
+
+        scrambledDialogue.forEach((line, index) => {
+            if (line === currentDialogue[index]) {
+                items[index].classList.add('correct');
+                items[index].classList.remove('incorrect');
+            } else {
+                items[index].classList.add('incorrect');
+                items[index].classList.remove('correct');
+                allCorrect = false;
+            }
+        });
+
+        const feedbackEl = document.getElementById('feedback');
+        if (allCorrect) {
+            feedbackEl.textContent = "🎉 Richtig! Great job!";
+            feedbackEl.style.color = "#4ade80";
+        } else {
+            feedbackEl.textContent = "❌ Not quite right yet. Try rearranging lines!";
+            feedbackEl.style.color = "#f87171";
+        }
+    }
+
+    // Run initialization on page load
+    initApp();
+</script>
+</body>
+</html>

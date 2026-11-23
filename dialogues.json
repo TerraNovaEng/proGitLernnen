@@ -1,0 +1,46 @@
+{
+    "dover": [
+        "Ja, mein Herr?",
+        "Können Sie bitte mein Gepäck nehmen?",
+        "Der Zug nach London?",
+        "Ja, bitte.",
+        "Ist das (hier) ihr Koffer?",
+        "Ja, er ist es."
+    ],
+    "flight": [
+        "Kann ich Ihnen behilflich sein?",
+        "Ja, ich möchte gerne umbuchen.",
+        "Ich bin auf den 3 Uhr Flug nach Düsseldorf nächsten Samstag gebucht.",
+        "Möchten Sie einen früheren oder einen späteren Flug?",
+        "So spät wie möglich, bitte."
+    ],
+    "customs": [
+        "Guten Morgen. Ist das Ihr Gepäck?",
+        "Ja.",
+        "Haben Sie etwas zu verzollen?",
+        "Nein, nichts.",
+        "In Ordnung, mein Herr. Sie können durchgehen."
+    ],
+    "restaurant": [
+        "Kann ich bitte eine Weinkarte bitten?",
+        "Bitte, mein Herr, und hier ist die Weinkarte.",
+        "Womit möchten Sie beginnen?",
+        "Ich möchte gerne Tomatensuppe.",
+        "Und was möchten Sie als Hauptgericht?"
+    ],
+    "bank": [
+        "Guten Tag, ich möchte gerne Geld wechseln.",
+        "Guten Tag. Welche Währung möchten Sie wechseln?",
+        "Ich möchte britische Pfund in Euro wechseln.",
+        "Wie viel möchten Sie denn wechseln?",
+        "200 Pfund bitte."
+    ],
+    "scotland": [
+        "Gerd, von welchem Bahnhof fahren die Züge nach Schottland ab?",
+        "Wann fährt der nächste Zug nach Glasgow?",
+        "Wie lange dauert es mit der Bahn von London nach Glasgow?",
+        "Wann kommen Sie in Glasgow an?",
+        "Wo leben Ihre Freunde in Schottland?"
+    ]
+},
+       
